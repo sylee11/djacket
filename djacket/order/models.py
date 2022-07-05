@@ -1,6 +1,3 @@
-from curses.ascii import US
-from itertools import product
-from operator import mod
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -12,7 +9,7 @@ class Order(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.CharField(max_length=100)
-    adress = models.CharField(max_length=100)
+    address = models.CharField(max_length=100)
     zipcode = models.CharField(max_length=100)
     place = models.CharField(max_length=100)
     phone = models.CharField(max_length=100)
