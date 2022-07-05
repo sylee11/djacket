@@ -9,6 +9,7 @@ djangorestframework = "*"
 djoser = "*"
 django-cors-headers = "*"
 pillow = "*"
+stripe = "*"
 
 [dev-packages]
 

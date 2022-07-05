@@ -22,6 +22,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-3i+)6@&8ww3b7r@fjf9s%o*p&yahaugsz4ur%h5!4i1as(2af3'
 
+STRIPE_API_KEY = 'sk_test_51LI8d7LSpjtp1yOace8dIs1zyC0Us8Y0Qiv9lnWx0MMEAmlAv0G7Nk7hI92jcT1zeQxULUWrwnuQhpgTs9UmyBSY00T0nlpzKG'
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -39,15 +41,18 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
+    'rest_framework.authtoken',
     'djoser',
     'corsheaders',
     'product',
+    'order',
 
 ]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://127.0.0.1:9000",
+    "http://192.168.10.65:8080",
 ]
 
 MIDDLEWARE = [
@@ -110,6 +115,22 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+#configure DRF
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
+
+# configure Djoser
+# DJOSER = {
+#     "USER_ID_FIELD": "username"
+# }
+
+# AUTH_USER_MODEL = 'product.User'
 
 
 # Internationalization

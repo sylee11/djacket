@@ -19,16 +19,7 @@
         v-for="product in lastestProducts"
         v-bind:key="product.id"
       >
-        <div class="box">
-          <figure class="image mb-4">
-            <img :src="product.get_thumnail" alt="thumnail">
-          </figure>
-
-          <h3 class="is-size-4"> {{ product.name }} </h3>
-          <p class="is-size-6 has-text-grey"> ${{ product.price }} </p>
-
-          <router-link v-bind:to="product.get_absolute_url" class="button is-dark mt-4">Views details</router-link> 
-        </div>
+        <ProductBox :product="product" />
 
       </div>
     </div>
@@ -38,6 +29,7 @@
 <script>
 // @ is an alias to /src
 import axios from 'axios';
+import ProductBox from '../components/ProductBox.vue';
 
 export default {
   name: 'HomeView',
@@ -47,6 +39,7 @@ export default {
     }
   },
   components: {
+    ProductBox
   },
   mounted() {
     this.getLastestProduct()
