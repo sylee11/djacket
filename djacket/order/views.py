@@ -28,16 +28,26 @@ def checkout(request):
         paid_amount = sum(item.get('quantity') * item.get('price') for item in serializer.validated_data.get('items'))
         try:
             charge = stripe.Charge.create(
-                amount=paid_amount,
+                amount=int(paid_amount * 100),
                 currency="usd",
                 description="My First Test Charge (created for API docs at https://www.stripe.com/docs/api)",
                 source=serializer.validated_data.get('stripe_token'), # obtained with Stripe.js
             )
 
-            serializer.save(user=request.User, paid_amount=paid_amount)
+            serializer.save(user=request.user, paid_amount=paid_amount)
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except Exception as exc:
             print(exc)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OrdersList(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+        orders = Order.objects.filter(user=request.user)
+        serializer = MyOrderSerializer(orders, many=True)
+        return Response(serializer.data)

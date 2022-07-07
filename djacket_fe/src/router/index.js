@@ -8,6 +8,7 @@ import SignUpView from '../views/SignUp.vue'
 import LogInView from '../views/LoginView.vue'
 import MyAccountView from '../views/MyAccount.vue'
 import CheckoutProcessView from '../views/CheckoutProcess.vue'
+import SuccessView from '../views/SuccessView.vue'
 
 const routes = [
   {
@@ -65,6 +66,11 @@ const routes = [
     path: '/cart/checkout',
     name: 'checkoutProcess',
     component: CheckoutProcessView
+  },
+  {
+    path: '/cart/success',
+    name: 'sucssess',
+    component: SuccessView
   }
 ]
 

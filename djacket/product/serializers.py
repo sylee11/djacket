@@ -1,6 +1,3 @@
-from dataclasses import field
-from operator import mod
-from statistics import mode
 from rest_framework.serializers import ModelSerializer
 
 from .models import Category, Product

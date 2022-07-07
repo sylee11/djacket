@@ -110,20 +110,33 @@
 
 <script>
 import ProcessChekoutRecord from '@/components/ProcessCheckoutRecord.vue'
+import axios from 'axios'
 export default {
     name : 'CheckoutProcess',
     data() {
         return {
-            cart: this.$store.state.cart,
+            cart: {
+                items: []
+            },
             first_name: '',
             last_name: '',
+            stripe: {},
+            card: {},
             email: '',
             phone: '',
             address: '',
             zipcode: '',
             place: '',
             errors: [],
-            cartTotalLength: 0,
+        }
+    },
+    mounted() {
+        this.cart = this.$store.state.cart
+        if (this.cartTotalLength > 0) {
+            this.stripe = window.Stripe('pk_test_51LI8d7LSpjtp1yOao4XaHnaziuZ3PuGi5zHMIV0r0lVmLMrD1af8E5k9AcVoeNHSZKovCmzMqt5XbbLaWy693qvn00cg8jMZ3R')
+            const elements = this.stripe.elements();
+            this.card = elements.create('card', { hidePostalCode: true })
+            this.card.mount('#card-element')
         }
     },
     components: {
@@ -140,7 +153,64 @@ export default {
              if (!this.first_name) {
                  this.errors.push('First name is required')
              }
-         }
+
+             if (!this.errors.length) {
+                 this.stripe.createToken(this.card).then(result => {                    
+                    if (result.error) {
+                        this.errors.push('Something went wrong with Stripe. Please try again')
+                        console.log(result.error.message)
+                    } else {
+                        this.stripeTokenHandler(result.token)
+                    }
+                })
+             }
+         },
+         async stripeTokenHandler(token) {
+            const items = []
+            for (let i = 0; i < this.cart.items.length; i++) {
+                const item = this.cart.items[i]
+                const obj = {
+                    product: item.product.id,
+                    quantity: item.quantity,
+                    price: item.product.price * item.quantity
+                }
+                items.push(obj)
+            }
+            const data = {
+                'first_name': this.first_name,
+                'last_name': this.last_name,
+                'email': this.email,
+                'address': this.address,
+                'zipcode': this.zipcode,
+                'place': this.place,
+                'phone': this.phone,
+                'items': items,
+                'stripe_token': token.id
+            }
+            await axios
+                .post('/api/v1/checkout/', data)
+                .then(response => {
+                    this.$store.commit('clearCart')
+                    this.$router.push('/cart/success')
+                    console.log(response);
+                })
+                .catch(error => {
+                    this.errors.push('Something went wrong. Please try again')
+                    console.log(error)
+                })
+        }
+    },
+    computed: {
+        cartTotalPrice() {
+            return this.cart.items.reduce((acc, curVal) => {
+                return acc += curVal.product.price * curVal.quantity
+            }, 0)
+        },
+        cartTotalLength() {
+            return this.cart.items.reduce((acc, curVal) => {
+                return acc += curVal.quantity
+            }, 0)
+        }
     }
 }
 </script>
